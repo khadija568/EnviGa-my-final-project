@@ -1,15 +1,66 @@
-import { cn } from "@/lib/utils"
+import { cn, handleError, handleSuccess } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Leaf } from "lucide-react" // Optional: Leaf icon for eco-vibe
+import { ToastContainer } from "react-toastify";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+
+  const [loginInfo, setLoginInfo] = useState({
+    email: '',
+    password: '',
+  });
+
+  const navigate = useNavigate();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLoginInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { email, password } = loginInfo;
+
+    if ( !email || !password ) {
+      return handleError("email and password are required.");
+    }
+
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginInfo)
+      });
+
+      const result = await response.json();
+      const { success, message, error } = result;
+
+      if (success) {
+        handleSuccess(message);
+        setTimeout(() => navigate('/dashboard'), 1000);
+      } else if (error) {
+        const details = error?.details?.[0]?.message || "Something went wrong.";
+        handleError(details);
+      } else {
+        handleError(message || "Registration failed.");
+      }
+    } catch (err) {
+      handleError("An unexpected error occurred.");
+    }
+  };
+
   return (
-    <form
+    <form onSubmit={handleLogin}
       className={cn(
         "flex flex-col gap-6 p-8 rounded-xl bg-emerald-50 border border-emerald-100 shadow-lg shadow-emerald-100/40 backdrop-blur-sm",
         className
@@ -30,8 +81,11 @@ export function LoginForm({
           <Label htmlFor="email" className="text-emerald-900">Email</Label>
           <Input
             id="email"
+            name="email"
             type="email"
             placeholder="m@example.com"
+            onChange={handleChange}
+            value={loginInfo.email}
             required
             className="rounded-md border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500"
           />
@@ -41,7 +95,10 @@ export function LoginForm({
           <Label htmlFor="password" className="text-emerald-900">Password</Label>
           <Input
             id="password"
+            name="password"
             type="password"
+            onChange={handleChange}
+            value={loginInfo.password}
             required
             className="rounded-md border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500"
           />
@@ -69,6 +126,7 @@ export function LoginForm({
           Sign up
         </a>
       </div>
+      <ToastContainer />
     </form>
   )
 }
