@@ -43,17 +43,32 @@ export function LoginForm({
       });
 
       const result = await response.json();
-      const { success, message, error } = result;
+      const { message, token, user, error } = result;
+      console.log("User role:", user.role);
 
-      if (success) {
-        handleSuccess(message);
-        setTimeout(() => navigate('/dashboard'), 1000);
-      } else if (error) {
-        const details = error?.details?.[0]?.message || "Something went wrong.";
-        handleError(details);
-      } else {
-        handleError(message || "Registration failed.");
-      }
+      if (token && user) {
+  handleSuccess(message || "Login successful");
+
+  // تخزين المعلومات في localStorage
+  localStorage.setItem("token", token);
+  localStorage.setItem("name", user.name);
+  localStorage.setItem("role", user.role);
+
+  setTimeout(() => {
+  if (user.role === 'hotel') {
+    navigate("/dashboard/hotel");
+  } else if (user.role === 'association') {
+    navigate("/dashboard/association");
+  } else {
+    navigate("/"); // توجيه افتراضي إذا كان النوع غير معروف
+  }
+}, 1000);
+} else if (error) {
+  const details = error?.details?.[0]?.message || "Something went wrong.";
+  handleError(details);
+} else {
+  handleError(message || "Login failed.");
+}
     } catch (err) {
       handleError("An unexpected error occurred.");
     }

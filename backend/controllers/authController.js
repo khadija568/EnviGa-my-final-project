@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+    console.log("Received role:",role);
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Tous les champs sont obligatoires.' });
     }
@@ -25,6 +26,7 @@ export const registerUser = async (req, res) => {
     );
 
     res.status(201).json({
+      success: true,
       message: 'Inscription réussie',
       token,
       user: { id: user._id, name: user.name, email: user.email, role: user.role },

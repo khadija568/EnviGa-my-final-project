@@ -15,22 +15,24 @@ export function RegisterForm({
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: '' // <-- النوع الافتراضي
   });
 
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setRegisterInfo((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const { name, value } = e.target;
+  setRegisterInfo((prev) => ({ ...prev, [name]: value }));
   };
+  //console.log("Updated role:", e.target.value);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { name, email, password, confirmPassword } = registerInfo;
+    const { name, email, password, confirmPassword, role } = registerInfo;
 
-    if (!name || !email || !password || !confirmPassword) {
-      return handleError("Name, email, password, and confirm password are required.");
+    if (!name || !email || !password || !confirmPassword || !role) {
+      return handleError("All fields are required.");
     }
 
     if (password !== confirmPassword) {
@@ -38,6 +40,7 @@ export function RegisterForm({
     }
 
     try {
+      console.log("Submitting:", registerInfo.role); 
       const response = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: {
@@ -47,26 +50,23 @@ export function RegisterForm({
       });
 
       const result = await response.json();
-      const { success, message } = result;
-
-      if(success) {
-      handleSuccess(message);
+      console.log("Register result:", result);
+      if (response.ok && result.success && result.user) {
+        handleSuccess(result.message || "Registration successful!");
         setTimeout(() => navigate('/login'), 1000);
+        setRegisterInfo({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          role: 'user'
+        });
+      } else {
+        handleError(result.message || "Registration failed.");
+      }
+    } catch (err) {
+      handleError(err instanceof Error ? err.message : "Something went wrong");
     }
-    if (!response.ok) {
-      return handleError(result.message || "Registration failed");
-    }
-    handleSuccess(result.message || "Registration successful!");
-
-    setRegisterInfo({
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
-    });
-  }catch (err) {
-    handleError(err instanceof Error ? err.message : "Something went wrong");
-  }
   };
 
   return (
@@ -95,7 +95,6 @@ export function RegisterForm({
             placeholder="John Doe"
             onChange={handleChange}
             value={registerInfo.name}
-            // required
             className="rounded-md border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500"
           />
         </div>
@@ -109,7 +108,6 @@ export function RegisterForm({
             placeholder="m@example.com"
             onChange={handleChange}
             value={registerInfo.email}
-            // required
             className="rounded-md border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500"
           />
         </div>
@@ -122,7 +120,6 @@ export function RegisterForm({
             type="password"
             onChange={handleChange}
             value={registerInfo.password}
-            // required
             className="rounded-md border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500"
           />
         </div>
@@ -135,9 +132,24 @@ export function RegisterForm({
             type="password"
             onChange={handleChange}
             value={registerInfo.confirmPassword}
-            // required
             className="rounded-md border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500"
           />
+        </div>
+
+        {/* نوع الحساب */}
+        <div className="grid gap-2">
+          <Label htmlFor="role" className="text-emerald-900">Account Type</Label>
+          <select
+            id="role"
+            name="role"
+            value={registerInfo.role}
+            onChange={handleChange}
+            className="rounded-md border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2"
+          >
+            <option value="">--Select Account Type--</option>
+            <option value="association">Association</option>
+            <option value="hotel">Hotel</option>
+          </select>
         </div>
 
         <Button

@@ -9,6 +9,10 @@ const router = express.Router();
 // });
 
 router.post("/register" , registerUser);
-router.post('/login', loginUser); 
+router.post('/login', loginUser);
+router.get('/me', authMiddleware);
+router.get('/register', (req, res)=>{
+    res.send('GET request to /api/auth/register is working')
+})
 
 export default router;
