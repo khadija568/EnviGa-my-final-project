@@ -1,6 +1,6 @@
 // src/layouts/AssociationDashboardLayout.tsx
 
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { LogOut, BarChart, MessageCircle, PackageSearch } from "lucide-react";
 
@@ -24,6 +24,8 @@ export default function AssociationDashboardLayout() {
       icon: <PackageSearch size={18} />,
     },
   ];
+
+  const navigate = useNavigate();
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-50">
@@ -55,7 +57,7 @@ export default function AssociationDashboardLayout() {
           </nav>
         </div>
 
-        <button className="flex items-center gap-2 text-sm hover:text-lime-300 transition">
+        <button onClick={() => navigate("/")} className="flex items-center gap-2 text-sm hover:text-lime-300 transition">
           <LogOut size={18} /> Logout
         </button>
       </aside>

@@ -3,16 +3,16 @@ import { useEffect, useState } from "react";
 
 type WastePickup = {
   id: number;
-  date: string;
-  amount: number;
-  status: "Pending" | "Picked Up" | "Rejected";
+  createdAt: string;
+  weight: number;
+  status: "pending" | "picked_up" | "accepted";
 };
 
-const mockPickups: WastePickup[] = [
-  { id: 1, date: "2025-06-01", amount: 120, status: "Picked Up" },
-  { id: 2, date: "2025-06-05", amount: 100, status: "Pending" },
-  { id: 3, date: "2025-06-08", amount: 150, status: "Pending" },
-];
+// const mockPickups: WastePickup[] = [
+//   { id: 1, date: "2025-06-01", amount: 120, status: "Picked Up" },
+//   { id: 2, date: "2025-06-05", amount: 100, status: "Pending" },
+//   { id: 3, date: "2025-06-08", amount: 150, status: "Pending" },
+// ];
 
 export default function HotelPickupStatusPage() {
 
@@ -22,7 +22,7 @@ export default function HotelPickupStatusPage() {
   useEffect(() => {
     const fetchPickups = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/waste", {
+        const res = await fetch("http://localhost:5000/api/waste/hotel", {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}` // لو تستخدم JWT
@@ -31,6 +31,7 @@ export default function HotelPickupStatusPage() {
 
         if (res.ok) {
           const data = await res.json();
+          console.log(data);
           setPickups(data);
         } else {
           console.error("Failed to fetch pickups");
@@ -59,17 +60,19 @@ export default function HotelPickupStatusPage() {
             </tr>
           </thead>
           <tbody>
-            {mockPickups.map((pickup) => (
+            {pickups.map((pickup) => (
               <tr key={pickup.id} className="hover:bg-gray-50">
-                <td className="py-2 px-4 border">{pickup.date}</td>
-                <td className="py-2 px-4 border">{pickup.amount}</td>
+                <td className="py-2 px-4 border">{pickup.createdAt}</td>
+                <td className="py-2 px-4 border">{pickup.weight}</td>
                 <td className="py-2 px-4 border">
-                  {pickup.status === "Pending" ? (
-                    <span className="text-yellow-600 font-medium">⏳ Pending</span>
-                  ) : pickup.status === "Picked Up" ? (
-                    <span className="text-green-700 font-medium">✅ Picked Up</span>
+                  {pickup.status === "pending" ? (
+                  <span className="text-yellow-600 font-medium">⏳ Pending</span>
+                  ) : pickup.status === "picked_up" ? (
+                  <span className="text-green-700 font-medium">✅ Picked Up</span>
+                  ) : pickup.status === "accepted" ? (
+                  <span className="text-blue-600 font-medium">✔️ Accepted</span>
                   ) : (
-                    <span className="text-red-600 font-medium">❌ Rejected</span>
+                  <span className="text-red-600 font-medium">❌ Unknown</span>
                   )}
                 </td>
               </tr>

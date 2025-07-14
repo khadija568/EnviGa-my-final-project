@@ -51,7 +51,7 @@ export const updateWasteStatus = async (req, res) => {
 
 // جلب كل الطلبات الخاصة بفندق معيّن
 export const getWasteByHotelId = async (req, res) => {
-  const hotelId = req.query.hotelId; // من query مثلاً
+  const hotelId = req.user.id; // من query مثلاً
   console.log("hotelID received from client:", hotelId);
   if (!hotelId) {
     return res.status(400).json({ error: "Hotel ID is required" });

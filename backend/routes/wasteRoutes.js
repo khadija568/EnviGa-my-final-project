@@ -56,6 +56,6 @@ router.patch('/:id/status', updateWasteStatus);
 router.delete('/:id', deleteWasteById)
 
 //hotel wast
-router.get("/hotel", getWasteByHotelId);
+router.get("/hotel",authMiddleware, getWasteByHotelId);
 
 export default router;

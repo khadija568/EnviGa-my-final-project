@@ -32,6 +32,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuButton asChild>
             <NavLink
               to="/dashboard/hotel/chat"
+              end
               className={({ isActive }) =>
                 `transition-all duration-200 font-medium flex items-center gap-2 ${
                   isActive ? "text-lime-300" : "text-white hover:text-lime-200"
@@ -50,6 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuButton asChild>
             <NavLink
               to="/dashboard/hotel/waste"
+              end
               className={({ isActive }) =>
                 `transition-all duration-200 font-medium flex items-center gap-2 ${
                   isActive ? "text-lime-300" : "text-white hover:text-lime-200"

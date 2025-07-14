@@ -1,16 +1,18 @@
 //HotelDashboardLayout.tsx 
-import { Outlet, NavLink } from "react-router-dom"; 
+import { Outlet, NavLink, useNavigate } from "react-router-dom"; 
 import { useState } from "react"; 
 import { LogOut, Home, MessageCircle, Trash2, PackageCheck } from "lucide-react";
 
 export default function HotelDashboardLayout() { 
 const [active, setActive] = useState("dashboard");
 
-const menu = [ { name: "Dashboard", path: "/dashboard/hotel", icon: <Home size={18} /> }, 
+const menu = [ { name: "Dashboard", path: "/dashboard/hotel/statistics", icon: <Home size={18} /> }, 
 { name: "Waste Submission", path: "/dashboard/hotel/waste", icon: <Trash2 size={18} /> },
 { name: "Pickup Status", path: "/dashboard/hotel/pickups", icon: <PackageCheck size={18} /> },
 { name: "Chat", path: "/dashboard/hotel/chat", icon: <MessageCircle size={18} /> },
 { name: "certificate", path: "/dashboard/hotel/certificate", icon: <MessageCircle size={18} /> }, ];
+
+const navigate = useNavigate();
 
 return ( <div className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-50"> 
 {/* Sidebar */} 
@@ -38,7 +40,7 @@ return ( <div className="flex min-h-screen bg-gradient-to-br from-emerald-50 via
       </nav>
   </div>
 
-    <button className="flex items-center gap-2 text-sm hover:text-lime-300 transition">
+    <button onClick={() => navigate("/")} className="flex items-center gap-2 text-sm hover:text-lime-300 transition">
       <LogOut size={18} /> Logout
     </button>
   </aside>

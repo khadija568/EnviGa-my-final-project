@@ -3,10 +3,26 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function HotelDashboardHome() {
-  const [hotelName, setHotelName] = useState("Eco Hotel"); // من قاعدة البيانات لاحقًا
+  const [hotelName, setHotelName] = useState(""); // من قاعدة البيانات لاحقًا
   const [lastSubmissionDate, setLastSubmissionDate] = useState("June 5, 2025");
   const [ecoScore, setEcoScore] = useState(72); // درجة بيئية تقديرية
   const navigate = useNavigate();
+
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    fetch("/api/hotel/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setHotelName(data.name);
+      })
+      .catch((err) => console.error(err));
+  }
+}, []);
 
   return (
     <div className="p-6 bg-gradient-to-br from-green-50 via-white to-lime-50 min-h-screen text-emerald-800">
